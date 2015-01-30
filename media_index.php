@@ -22,6 +22,7 @@ class Media_Index {
             '/^\./',    // .file
             '/[#~]$/',  // file# and file~
             '/404\\' . CONTENT_EXT . '/',   // 404.md
+            '/.php$/',  // file.php
         );
         $this->accept = array();
     }
@@ -69,11 +70,11 @@ class Media_Index {
             $is_index = FALSE;
         }
         $base_url = Request::base_url();
-        $dir_url = Request::route();
-
-		if(substr($dir_url, -1) != '/'){
-			$dir_url = $base_url . dirname(str_replace($base_url, '', $dir_url));
+        $dir_route = Request::route();
+		if(substr($dir_route, -1) != '/'){
+			$dir_route = $base_url . dirname(str_replace($base_url, '', $dir_route));
         }
+        $dir_route = trim($dir_route, '/');
 
 		$medias = Files::find($cur_dir, '', FALSE); // every file, single level
 		$sorted_medias = array();
@@ -113,34 +114,38 @@ class Media_Index {
             $data['filename'] = pathinfo($media, PATHINFO_BASENAME);
             $data['extension'] = pathinfo($media, PATHINFO_EXTENSION);
             $data['size'] = filesize($media);
-		    $url = str_replace($cur_dir, $dir_url . '/', $media);
-		    $url = str_replace('index' . CONTENT_EXT, '', $url);
-            $url = str_replace(CONTENT_EXT, '', $url);
-            $data['url'] = $url;
+		    $route = str_replace($cur_dir, $dir_route . '/', $media);
+		    $route = str_replace('index' . CONTENT_EXT, '', $route);
+            $route = str_replace(CONTENT_EXT, '', $route);
+            $route = '/' . trim($route, '/');
+            $data['route'] = $route;
+            $data['url'] = $base_url . $route;
 
             // get media metadata
-            $page_meta = $data['meta'];
-            if(!is_array($page_meta)){
-                $page_meta = array();
+            $meta = $data['meta'];
+            if(!is_array($meta)){
+                $meta = array();
             }
 
 			// Extend the data provided with each page by hooking into the data array
-			$env->run_hooks('after_indexing_content', array(&$data, $page_meta));
+			$env->run_hooks('after_indexing_content', array(&$data, $meta));
 
-			if ($order_by == 'date' && isset($page_meta['date'])) {
-				$sorted_pages[$page_meta['date'] . $date_id] = $data;
+			if ($order_by == 'date' && isset($meta['date'])) {
+				$sorted_medias[$meta['date'] . $date_id] = $data;
 				$date_id++;
 			}
 			else
-				$sorted_pages[] = $data;
+				$sorted_medias[] = $data;
 		}
 
 		if ($order == 'desc')
-			krsort($sorted_pages);
+			krsort($sorted_medias);
 		else
-			ksort($sorted_pages);
-
-		return $sorted_pages;
+			ksort($sorted_medias);
+        echo "<!-- Index:\n";
+        var_dump($sorted_medias);
+        echo "-->\n";
+		return $sorted_medias;
     }
 
     /**
