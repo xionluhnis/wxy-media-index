@@ -2,7 +2,7 @@
 
 include_once ROOT_DIR . '/markdown.php';
 
-class Markdown_Index_File {
+class Media_Index_Markdown {
     
     public function indexing_content($file, $headers, &$data){
         // only treat markdown files
