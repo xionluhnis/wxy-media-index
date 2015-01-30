@@ -130,7 +130,7 @@ class Media_Index {
 			// Extend the data provided with each page by hooking into the data array
 			$env->run_hooks('after_indexing_content', array(&$data, $meta));
 
-			if ($order_by == 'date' && isset($meta['date'])) {
+			if ($config['order_by'] == 'date' && isset($meta['date'])) {
 				$sorted_medias[$meta['date'] . $date_id] = $data;
 				$date_id++;
 			}
@@ -138,10 +138,11 @@ class Media_Index {
 				$sorted_medias[] = $data;
 		}
 
-		if ($order == 'desc')
+		if ($config['order'] == 'desc')
 			krsort($sorted_medias);
 		else
 			ksort($sorted_medias);
+        // debug
         if($config['debug']){
             echo "<!-- Index:\n";
             var_dump($sorted_medias);
