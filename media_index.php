@@ -142,9 +142,11 @@ class Media_Index {
 			krsort($sorted_medias);
 		else
 			ksort($sorted_medias);
-        echo "<!-- Index:\n";
-        var_dump($sorted_medias);
-        echo "-->\n";
+        if($config['debug']){
+            echo "<!-- Index:\n";
+            var_dump($sorted_medias);
+            echo "-->\n";
+        }
 		return $sorted_medias;
     }
 
