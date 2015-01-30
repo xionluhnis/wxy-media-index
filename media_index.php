@@ -160,7 +160,7 @@ class Media_Index {
         global $config;
         $time = filectime($file);
         return array(
-			'date'      => date('yyyyMMdd', $time),
+			'date'      => date('Y/m/d', $time),
             'date_formatted'    => date($config['date_format'], $time),
             'meta'      => array()
 		);
