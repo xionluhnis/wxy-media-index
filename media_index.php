@@ -58,7 +58,7 @@ class Media_Index {
      * @param HookEnvironment $env
      * @return array $sorted_pages an array of pages
      */
-    public function get_index($file, $env, $headers)
+    public function get_index($file, $env, $headers, &$sorted_medias)
     {
         global $config;
 
@@ -123,10 +123,7 @@ class Media_Index {
             $data['url'] = $base_url . $route;
 
             // get media metadata
-            $meta = $data['meta'];
-            if(!is_array($meta)){
-                $meta = array();
-            }
+            $meta = array_key_exists('meta', $data) && is_array($data['meta']) ? $data['meta'] : array();
 
             // Extend the data provided with each page by hooking into the data array
             $env->run_hooks('after_indexing_content', array(&$data, $meta));
@@ -161,7 +158,6 @@ class Media_Index {
             var_dump($sorted_medias);
             echo "-->\n";
         }
-        return $sorted_medias;
     }
 
     /**
