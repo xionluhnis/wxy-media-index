@@ -118,7 +118,7 @@ class Media_Index {
             $data['filename'] = pathinfo($media, PATHINFO_BASENAME);
             $data['extension'] = pathinfo($media, PATHINFO_EXTENSION);
             $data['size'] = filesize($media);
-            $route = str_replace($cur_dir, $dir_route . '/', $media);
+            $route = str_replace($cur_dir, $dir_route, $media);
             $route = str_replace('index' . CONTENT_EXT, '', $route);
             $route = str_replace(CONTENT_EXT, '', $route);
             $route = '/' . trim($route, '/');
