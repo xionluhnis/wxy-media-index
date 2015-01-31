@@ -24,8 +24,11 @@ for any kind of data:
 * `type` - the data type such as _image_, _markdown_, _directory_ or _unknown_
 
 ## Managing new content types
-When loading data for a file, the plugin calls the hook 
-`indexing_content($media, $headers, &$data)`.
+When loading data for a file, the plugin calls the following hook:
+
+```php
+indexing_content($media, $headers, &$data)
+```
 
 Plugins can process the data for new file types through this hook.
 They must simply generate the data for the file `$media` and store
