@@ -21,6 +21,9 @@ class Media_Index_Image {
             'is_image'  => TRUE,
             'width'     => $meta[0],
             'height'    => $meta[1],
+            'is_wide'   => $meta[0] > $meta[1],
+            'is_tall'   => $meta[0] < $meta[1],
+            'is_square' => $meta[0] == $meta[1],
             'date'      => date('Ymd', $time),
             'date_formatted'    => date($config['date_format'], $time),
             'meta'      => $meta
