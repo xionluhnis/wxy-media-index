@@ -62,6 +62,9 @@ class Media_Index {
     {
         global $config;
 
+        // clean file
+        $file = Text::clean_slashes($file);
+
         $cur_file = basename($file);
         if($cur_file == 'index.md'){
             $cur_dir = dirname($file);
@@ -159,7 +162,7 @@ class Media_Index {
             echo "-->\n";
         }
     }
-
+    
     /**
      * Sort a media array by file type
      *
