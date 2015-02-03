@@ -1,5 +1,6 @@
 <?php
 
+include_once ROOT_DIR . '/chrono.php';
 include_once ROOT_DIR . '/files.php';
 include_once ROOT_DIR . '/hooks.php';
 include_once ROOT_DIR . '/markdown.php';
@@ -61,6 +62,7 @@ class Media_Index {
     public function get_index($file, $env, $headers, &$sorted_medias)
     {
         global $config;
+        $t = tictoc('plugin::get_index:');
 
         // clean file
         $file = Text::clean_slashes($file);
@@ -81,9 +83,12 @@ class Media_Index {
         $dir_route = trim($dir_route, '/');
 
         $medias = Files::find($cur_dir, '', FALSE, TRUE); // every file, single level
+        $t->toc('find');
+
         $sorted_medias = array();
         $date_id = 0;
         foreach ($medias as $key => $media) {
+            $t->toc('start ' . $media);
             // should we accept it without looking at ignore values?
             $ok = FALSE;
             foreach($this->accept as $acc) {
@@ -103,6 +108,7 @@ class Media_Index {
                 if(!$ok){
                     // we ignore it
                     unset($medias[$key]);
+                    $t->toc('ignore');
                     continue;
                 }
             }
@@ -110,8 +116,11 @@ class Media_Index {
             // load index data
             $data = array();
             $env->run_hooks('indexing_content', array($media, $headers, &$data));
-            if(empty($data))
+            $t->toc('content_hooks');
+            if(empty($data)){
                 $data = self::get_default_content($media);
+                $t->toc('content_default');
+            }
 
             // force parameters
             $data['file'] = $media;
@@ -124,12 +133,14 @@ class Media_Index {
             $route = '/' . trim($route, '/');
             $data['route'] = $route;
             $data['url'] = $base_url . $route;
+            $t->toc('default');
 
             // get media metadata
             $meta = array_key_exists('meta', $data) && is_array($data['meta']) ? $data['meta'] : array();
 
             // Extend the data provided with each page by hooking into the data array
             $env->run_hooks('after_indexing_content', array(&$data, $meta));
+            $t->toc('end ' . $media);
 
             if ($config['order_by'] == 'date' && isset($meta['date'])) {
                 $sorted_medias[$meta['date'] . $date_id] = $data;
@@ -145,6 +156,8 @@ class Media_Index {
         else
             ksort($sorted_medias);
 
+        $t->toc('sort');
+
         // type ordering
         if ($config['order_by'] == 'type'){
             if(!array_key_exists('index_type_order', $config)){
@@ -153,6 +166,7 @@ class Media_Index {
                 $type_order = $config['index_type_order'];
             }
             $sorted_medias = self::sort_by_type($sorted_medias, $type_order);
+            $t->toc('sort_by_type');
         }
 
         // debug
@@ -160,9 +174,10 @@ class Media_Index {
             echo "<!-- Index:\n";
             var_dump($sorted_medias);
             echo "-->\n";
+            $t->toc('debug');
         }
     }
-    
+
     /**
      * Sort a media array by file type
      *
