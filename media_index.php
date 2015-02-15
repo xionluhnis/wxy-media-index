@@ -194,6 +194,20 @@ class Media_Index {
                 $types[$type] = array();
             $types[$type][] = $media;
         }
+        // sub-order in groups
+        foreach($types as &$list){
+            usort($list, function($a, $b){
+                $file_a = $a['filename'];
+                $file_b = $b['filename'];
+                // echo '<!-- ' . $file_a . ' / ' . $file_b . ' => ' . strnatcasecmp($file_a, $file_b) . " -->\n";
+                return strnatcasecmp($file_a, $file_b);
+            });
+        }
+        // reference issue:
+        // @see http://stackoverflow.com/questions/3307409/php-pass-by-reference-in-foreach
+        // @see http://php.net/manual/en/control-structures.foreach.php#92116
+        unset($list);
+
         // flatten
         $sorted_medias = array();
         foreach($type_order as $type){
