@@ -14,6 +14,11 @@ $config['media_index_ignore'] = array(
 $config['media_index_accept'] = array();
 ```
 
+The plugin provides a new ordering `type` for `$config['order_by']`:
+```php
+$config['index_type_order'] = array('directory', 'markdown', 'image', 'unknown', '');
+```
+
 ## Template data
 The index should enforce that the following data is generated
 for any kind of data:
